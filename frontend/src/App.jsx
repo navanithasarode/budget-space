@@ -21,7 +21,7 @@ function AppRoutes() {
   }
 
   // Logged in → show onboarding
-  if (onboardingStep <= 2) {
+  if (onboardingStep <= 3) {
     return (
       <OnboardingModal
         step={onboardingStep}

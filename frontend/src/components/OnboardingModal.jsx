@@ -1,89 +1,54 @@
 import React, { useState } from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { AppProvider, useApp } from "./context/AppContext";
 
-export default function OnboardingModal({ step = 1, onComplete }) {
-  const [selected, setSelected] = useState("");
+import Layout from "./components/Layout";
+import Dashboard from "./pages/Dashboard";
+import BudgetDetails from "./pages/BudgetDetails";
+import CreateBudget from "./pages/CreateBudget";
 
-  const peopleOptions = [
-    "Just me",
-    "Family",
-    "Friends",
-    "Partner",
-    "Other",
-  ];
+import AuthModal from "./components/AuthModal";
+import OnboardingModal from "./components/OnboardingModal";
 
-  const purposeOptions = [
-    "Trip / Travel",
-    "Monthly expenses",
-    "Birthday / Celebration",
-    "Education",
-    "Healthcare",
-    "Shopping",
-    "Work / Business",
-    "Saving for something",
-    "Other",
-  ];
+function AppRoutes() {
+  const { user } = useApp();
 
-  const options = step === 1 ? peopleOptions : purposeOptions;
+  const [onboardingStep, setOnboardingStep] = useState(1);
 
-  function continueNext() {
-    if (!selected) return;
-
-    onComplete(selected);
+  // Not logged in → show login/signup
+  if (!user) {
+    return <AuthModal />;
   }
 
+  // Logged in → show all 3 onboarding steps
+  if (onboardingStep <= 3) {
+    return (
+      <OnboardingModal
+        step={onboardingStep}
+        onComplete={() => {
+          setOnboardingStep(onboardingStep + 1);
+        }}
+      />
+    );
+  }
+
+  // Onboarding finished → show the actual app
   return (
-    <div className="onboarding-screen">
-      <div className="onboarding-modal">
+    <Routes>
+      <Route element={<Layout />}>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/budgets/new" element={<CreateBudget />} />
+        <Route path="/budgets/:id" element={<BudgetDetails />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Route>
+    </Routes>
+  );
+}
 
-        <div className="onboarding-step">
-          Step {step} of 3
-        </div>
-
-        <div className="onboarding-icon">
-          {step === 1 ? "👋" : "✨"}
-        </div>
-
-        <h2>
-          {step === 1
-            ? "Who are you budgeting with?"
-            : "What is this budget tracker for?"}
-        </h2>
-
-        <p>
-          {step === 1
-            ? "Tell us who this Budget Space is for."
-            : "Choose what you’re planning or keeping track of."}
-        </p>
-
-        <div className="onboarding-options">
-          {options.map((option) => (
-            <button
-              key={option}
-              className={
-                selected === option
-                  ? "onboarding-option selected"
-                  : "onboarding-option"
-              }
-              onClick={() => setSelected(option)}
-            >
-              <span className="option-circle">
-                {selected === option ? "✓" : ""}
-              </span>
-
-              {option}
-            </button>
-          ))}
-        </div>
-
-        <button
-          className="primary-button onboarding-continue"
-          disabled={!selected}
-          onClick={continueNext}
-        >
-          Continue →
-        </button>
-
-      </div>
-    </div>
+export default function App() {
+  return (
+    <AppProvider>
+      <AppRoutes />
+    </AppProvider>
   );
 }

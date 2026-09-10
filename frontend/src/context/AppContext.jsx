@@ -28,7 +28,7 @@ function normalizeBackendBudget(b) {
 export function AppProvider({ children }) {
   const hasApi = Boolean(import.meta.env.VITE_API_URL);
   const [mode, setMode] = useState(hasApi ? "backend" : "demo");
-  const [budgets, setBudgets] = useState(mockBudgets);
+  const [budgets, setBudgets] = useState(hasApi ? [] : mockBudgets);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -100,16 +100,20 @@ export function AppProvider({ children }) {
   };
 
   const addBudget = async (budget) => {
-    if (mode === "backend") {
-      await api.createBudget(budget);
-      await refresh();
-      return;
-    }
-    setBudgets(prev => [{
-      ...budget,
-      id: crypto.randomUUID(),
-      expenses: []
-    }, ...prev]);
+  if (mode === "backend") {
+    await api.createBudget(budget);
+    await refresh();
+    return;
+  }
+
+    setBudgets(prev => [
+      {
+        ...budget,
+        id: crypto.randomUUID(),
+        expenses: []
+      },
+      ...prev.filter(b => !mockBudgets.some(mock => mock.id === b.id))
+   ]);
   };
 
   const deleteBudget = async id => {
