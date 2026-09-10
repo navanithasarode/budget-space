@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "services": [
+    {
+      "name": "frontend",
+      "source": "frontend",
+      "framework": "vite"
+    },
+    {
+      "name": "backend",
+      "source": "backend",
+      "framework": "express"
+    }
+  ]
+}
