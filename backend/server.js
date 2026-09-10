@@ -17,11 +17,30 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Something went wrong" });
 });
 
-const port = process.env.PORT || 5000;
+const dbReady = connectDB();
 
-connectDB()
-  .then(() => app.listen(port, () => console.log(`API running on http://localhost:${port}`)))
-  .catch(err => {
-    console.error("Database connection failed:", err.message);
-    process.exit(1);
-  });
+app.use(async (req, res, next) => {
+  try {
+    await dbReady;
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
+module.exports = app;
+
+if (require.main === module) {
+  const port = process.env.PORT || 5000;
+
+  dbReady
+    .then(() => {
+      app.listen(port, () => {
+        console.log(`API running on http://localhost:${port}`);
+      });
+    })
+    .catch(err => {
+      console.error("Database connection failed:", err.message);
+      process.exit(1);
+    });
+}
