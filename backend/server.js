@@ -22,6 +22,8 @@ app.get("/api/health", (req, res) => res.json({ ok: true, service: "budget-space
 app.use("/api/v1/auth", require("./routes/auth"));
 app.use("/api/v1/budgets", require("./routes/budgets"));
 app.use("/api/v1/expenses", require("./routes/expenses"));
+app.use("/api/v1/transport", require("./routes/transport"));
+app.use("/api/v1/stays", require("./routes/stay"));
 
 app.use((err, req, res, next) => {
   console.error(err);

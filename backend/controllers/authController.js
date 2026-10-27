@@ -6,9 +6,23 @@ function sign(user) {
   return jwt.sign({ id: user._id.toString(), email: user.email }, process.env.JWT_SECRET, { expiresIn: "7d" });
 }
 
+
 function safeUser(user) {
-  return { id: user._id, name: user.name, email: user.email, createdAt: user.createdAt };
+  return {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    createdAt: user.createdAt,
+    onboarding: user.onboarding || {
+      completed: false,
+      budgetingWith: "",
+      purpose: "",
+      firstAction: "",
+      numberOfPeople: 1
+    }
+  };
 }
+
 
 exports.register = async (req, res) => {
   try {
@@ -45,4 +59,85 @@ exports.me = async (req, res) => {
   const user = await User.findById(req.user.id);
   if (!user) return res.status(404).json({ message: "User not found" });
   res.json({ user: safeUser(user) });
+};
+
+
+exports.saveOnboarding = async (req, res) => {
+  try {
+    const {
+      budgetingWith,
+      purpose,
+      firstAction,
+      numberOfPeople
+    } = req.body;
+
+    const validGroups = [
+      "Just me",
+      "Family",
+      "Friends",
+      "Partner",
+      "Other"
+    ];
+
+    if (!validGroups.includes(budgetingWith)) {
+      return res.status(400).json({
+        message: "Please select who you are budgeting with"
+      });
+    }
+
+    if (!purpose || !firstAction) {
+      return res.status(400).json({
+        message: "Purpose and first action are required"
+      });
+    }
+
+    const peopleCount = budgetingWith === "Just me"
+      ? 1
+      : Number(numberOfPeople || 1);
+
+    if (
+      !Number.isInteger(peopleCount) ||
+      peopleCount < 1 ||
+      peopleCount > 100
+    ) {
+      return res.status(400).json({
+        message: "Number of people must be between 1 and 100"
+      });
+    }
+
+    const User = require("../models/User");
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+    user.onboarding = {
+      completed: true,
+      budgetingWith,
+      purpose,
+      firstAction,
+      numberOfPeople: peopleCount
+    };
+
+    await user.save();
+
+    res.json({
+      message: "Onboarding saved successfully",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        createdAt: user.createdAt,
+        onboarding: user.onboarding
+      }
+    });
+  } catch (err) {
+    console.error("Save onboarding error:", err);
+    res.status(500).json({
+      message: "Could not save onboarding"
+    });
+  }
 };

@@ -24,9 +24,13 @@ export default function OnboardingModal({ step = 1, onComplete }) {
   ];
 
   const firstActionOptions = [
-    "Create my first Budget Space",
-    "Explore the dashboard",
+    "Plan a trip",
+    "Track my expenses",
+    "Set a savings goal",
+    "Create a budget",
+    "Explore transport and stays",
   ];
+
 
   let options;
   let title;

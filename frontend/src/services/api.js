@@ -23,6 +23,22 @@ export const api = {
   budget: id => request(`/budgets/${id}`),
   createBudget: body => request("/budgets", { method: "POST", body: JSON.stringify(body) }),
   deleteBudget: id => request(`/budgets/${id}`, { method: "DELETE" }),
-  createExpense: (id, body) => request(`/budgets/${id}/expenses`, { method: "POST", body: JSON.stringify(body) }),
-  deleteExpense: id => request(`/expenses/${id}`, { method: "DELETE" })
+  
+  createExpense: (id, body) =>
+    request(`/budgets/${id}/expenses`, {
+      method: "POST",
+      body: JSON.stringify(body)
+    }),
+
+  deleteExpense: id =>
+    request(`/expenses/${id}`, { method: "DELETE" }),
+
+  saveOnboarding: body =>
+    request("/auth/onboarding", {
+      method: "PUT",
+      body: JSON.stringify(body)
+    }),
+    searchStays: params => 
+      request(`/stays/search?${new URLSearchParams(params)}`)
 };
+
