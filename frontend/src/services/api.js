@@ -34,11 +34,15 @@ export const api = {
     request(`/expenses/${id}`, { method: "DELETE" }),
 
   saveOnboarding: body =>
-    request("/auth/onboarding", {
-      method: "PUT",
-      body: JSON.stringify(body)
-    }),
-    searchStays: params => 
-      request(`/stays/search?${new URLSearchParams(params)}`)
+  request("/auth/onboarding", {
+    method: "PUT",
+    body: JSON.stringify(body)
+  }),
+  
+  searchStays: params =>
+    request(`/stays/search?${new URLSearchParams(params)}`),
+  
+  searchTransport: params =>
+    request(`/transport/search?${new URLSearchParams(params)}`)
 };
 

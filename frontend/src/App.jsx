@@ -6,6 +6,7 @@ import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import BudgetDetails from "./pages/BudgetDetails";
 import CreateBudget from "./pages/CreateBudget";
+import TravelPlanner from "./pages/TravelPlanner";
 
 import AuthModal from "./components/AuthModal";
 import OnboardingModal from "./components/OnboardingModal";
@@ -39,6 +40,7 @@ function AppRoutes() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/budgets/new" element={<CreateBudget />} />
         <Route path="/budgets/:id" element={<BudgetDetails />} />
+        <Route path="/travel" element={<TravelPlanner />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

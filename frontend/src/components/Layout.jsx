@@ -27,6 +27,10 @@ export default function Layout() {
           <NavLink to="/budgets/new">
             + New Budget Space
           </NavLink>
+
+          <NavLink to="/travel">
+            Travel Planner
+          </NavLink>
         </nav>
 
         <div className="sidebar-bottom">
